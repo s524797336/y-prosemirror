@@ -548,13 +548,39 @@ export class ProsemirrorBinding {
           this.mapping
         )
       ).filter((n) => n !== null)
+      
+      // BEGIN https://github.com/yjs/y-prosemirror/issues/113
+      let tr = this._tr
       // @ts-ignore
-      let tr = this._tr.replace(
-        0,
-        this.prosemirrorView.state.doc.content.size,
-        new PModel.Slice(PModel.Fragment.from(fragmentContent), 0, 0)
-      )
-      restoreRelativeSelection(tr, this.beforeTransactionSelection, this)
+      const newContent = new PModel.Fragment(fragmentContent)
+      const newDoc = this.prosemirrorView.state.schema.node("doc", {}, newContent)
+
+      const rangeSlice = getDiffRange(tr.doc, newDoc)
+      const rangeReplace = getDiffRange(newDoc, tr.doc)
+
+      let error = false
+
+      try {
+        if (rangeReplace) {
+          const slice = newDoc.slice(rangeSlice.start, rangeSlice.end)
+          tr = this._tr.replace(rangeReplace.start, rangeReplace.end, slice)
+          restoreRelativeSelection(tr, this.beforeTransactionSelection, this)
+        }
+      } catch(e) {
+        console.error(e)
+        error = true
+      }
+
+      // If there's a diff, fall back on the old behavior of y-prosemirror and replace the whole content.
+      const diffStart = newContent.findDiffStart(tr.doc.content)
+      if (error || diffStart !== null) {
+        console.error("recreateTransform produced a possibly incorrect transform. Falling back on old behavior.")
+        // @ts-ignore
+        tr = this._tr.replace(0, this.prosemirrorView.state.doc.content.size, new PModel.Slice(new PModel.Fragment(fragmentContent), 0, 0))
+        restoreRelativeSelection(tr, this.beforeTransactionSelection, this)
+      }
+      // END https://github.com/yjs/y-prosemirror/issues/113
+
       tr = tr.setMeta(ySyncPluginKey, { isChangeOrigin: true, isUndoRedoOperation: transaction.origin instanceof Y.UndoManager })
       if (
         this.beforeTransactionSelection !== null && this._isLocalCursorInView()
@@ -1184,3 +1210,25 @@ export const updateYFragment = (y, yDomFragment, pNode, mapping) => {
  */
 const matchNodeName = (yElement, pNode) =>
   !(pNode instanceof Array) && yElement.nodeName === pNode.type.name
+
+
+/**
+ * @function
+ * @param {PModel.Node} oldDoc Prosemirror Node
+ * @param {PModel.Node} newDoc Prosemirror Node
+ * @returns { { start: number, end: number } | null}
+ */
+function getDiffRange (oldDoc, newDoc) {
+  const start = oldDoc.content.findDiffStart(newDoc.content)
+  if (start === null) {
+    return null
+  }
+  const end = oldDoc.content.findDiffEnd(newDoc.content)
+  if (end === null) {
+    return null
+  }
+  let { a, b } = end
+  const overlap = start - Math.min(a, b)
+  if (overlap > 0) b += overlap
+  return { start, end: b }
+}
