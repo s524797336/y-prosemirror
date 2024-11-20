@@ -548,12 +548,12 @@ export class ProsemirrorBinding {
           this.mapping
         )
       ).filter((n) => n !== null)
-      
+
       // BEGIN https://github.com/yjs/y-prosemirror/issues/113
       let tr = this._tr
       // @ts-ignore
       const newContent = new PModel.Fragment(fragmentContent)
-      const newDoc = this.prosemirrorView.state.schema.node("doc", {}, newContent)
+      const newDoc = this.prosemirrorView.state.schema.node('doc', {}, newContent)
 
       const rangeSlice = getDiffRange(tr.doc, newDoc)
       const rangeReplace = getDiffRange(newDoc, tr.doc)
@@ -563,10 +563,10 @@ export class ProsemirrorBinding {
       try {
         if (rangeReplace) {
           const slice = newDoc.slice(rangeSlice.start, rangeSlice.end)
-          tr = this._tr.replace(rangeReplace.start, rangeReplace.end, slice)
+          tr = this._tr.replace(rangeReplace.start - slice.openStart, rangeReplace.end, slice)
           restoreRelativeSelection(tr, this.beforeTransactionSelection, this)
         }
-      } catch(e) {
+      } catch (e) {
         console.error(e)
         error = true
       }
@@ -574,7 +574,7 @@ export class ProsemirrorBinding {
       // If there's a diff, fall back on the old behavior of y-prosemirror and replace the whole content.
       const diffStart = newContent.findDiffStart(tr.doc.content)
       if (error || diffStart !== null) {
-        console.error("recreateTransform produced a possibly incorrect transform. Falling back on old behavior.")
+        console.error('recreateTransform produced a possibly incorrect transform. Falling back on old behavior.')
         // @ts-ignore
         tr = this._tr.replace(0, this.prosemirrorView.state.doc.content.size, new PModel.Slice(new PModel.Fragment(fragmentContent), 0, 0))
         restoreRelativeSelection(tr, this.beforeTransactionSelection, this)
@@ -1210,7 +1210,6 @@ export const updateYFragment = (y, yDomFragment, pNode, mapping) => {
  */
 const matchNodeName = (yElement, pNode) =>
   !(pNode instanceof Array) && yElement.nodeName === pNode.type.name
-
 
 /**
  * @function
