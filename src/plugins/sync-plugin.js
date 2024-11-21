@@ -231,22 +231,26 @@ export const ySyncPlugin = (yXmlFragment, {
  * @param {ProsemirrorBinding} binding
  */
 const restoreRelativeSelection = (tr, relSel, binding) => {
-  if (relSel !== null && relSel.anchor !== null && relSel.head !== null) {
-    const anchor = relativePositionToAbsolutePosition(
-      binding.doc,
-      binding.type,
-      relSel.anchor,
-      binding.mapping
-    )
-    const head = relativePositionToAbsolutePosition(
-      binding.doc,
-      binding.type,
-      relSel.head,
-      binding.mapping
-    )
-    if (anchor !== null && head !== null) {
-      tr = tr.setSelection(TextSelection.create(tr.doc, anchor, head))
+  try {
+    if (relSel !== null && relSel.anchor !== null && relSel.head !== null) {
+      const anchor = relativePositionToAbsolutePosition(
+        binding.doc,
+        binding.type,
+        relSel.anchor,
+        binding.mapping
+      )
+      const head = relativePositionToAbsolutePosition(
+        binding.doc,
+        binding.type,
+        relSel.head,
+        binding.mapping
+      )
+      if (anchor !== null && head !== null) {
+        tr = tr.setSelection(TextSelection.create(tr.doc, anchor, head))
+      }
     }
+  } catch (e) {
+    console.debug(e)
   }
 }
 
