@@ -1,6 +1,6 @@
 {
-  "name": "y-prosemirror",
-  "version": "1.2.15",
+  "name": "modevol-y-prosemirror",
+  "version": "1.2.17",
   "description": "Prosemirror bindings for Yjs",
   "main": "./dist/y-prosemirror.cjs",
   "module": "./src/y-prosemirror.js",
@@ -57,11 +57,11 @@
     "lib0": "^0.2.42"
   },
   "peerDependencies": {
-    "prosemirror-model": "^1.7.1",
-    "prosemirror-state": "^1.2.3",
-    "prosemirror-view": "^1.9.10",
-    "y-protocols": "^1.0.1",
-    "yjs": "^13.5.38"
+    "prosemirror-model": "^1.24.1",
+    "prosemirror-state": "^1.4.3",
+    "prosemirror-view": "^1.37.1",
+    "y-protocols": "^1.0.6",
+    "yjs": "^13.6.21"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^21.0.1",
@@ -69,16 +69,16 @@
     "concurrently": "^4.1.0",
     "http-server": "^0.12.3",
     "jsdom": "^15.1.1",
-    "prosemirror-example-setup": "^1.2.1",
-    "prosemirror-model": "^1.18.1",
-    "prosemirror-schema-basic": "^1.2.0",
-    "prosemirror-state": "^1.4.1",
-    "prosemirror-transform": "^1.6.0",
-    "prosemirror-view": "^1.26.2",
+    "prosemirror-example-setup": "^1.2.3",
+    "prosemirror-model": "^1.24.1",
+    "prosemirror-schema-basic": "^1.2.3",
+    "prosemirror-state": "^1.4.3",
+    "prosemirror-transform": "^1.10.2",
+    "prosemirror-view": "^1.37.1",
     "rollup": "^2.59.0",
     "standard": "^17.0.0",
     "typescript": "^5.4.5",
-    "y-protocols": "^1.0.5",
+    "y-protocols": "^1.0.6",
     "y-webrtc": "^10.2.0",
     "yjs": "^13.5.38"
   },
